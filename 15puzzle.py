@@ -1,6 +1,4 @@
-from typing import List, Tuple
-
-def is_goal(board: List[List[int]]) -> bool:
+def is_goal(board):
     N = len(board)
     n = 1
     for i in range(N):
@@ -11,7 +9,7 @@ def is_goal(board: List[List[int]]) -> bool:
             if n == N * N:
                 return True
 
-def manhattan_distance(board: List[List[int]]) -> int:
+def manhattan_distance(board):
     N = len(board)
     distance = 0
     for i in range(N):
@@ -23,11 +21,11 @@ def manhattan_distance(board: List[List[int]]) -> int:
             distance += abs(i - target_x) + abs(j - target_y)
     return distance
 
-def ida_star(board: List[List[int]]) -> List[Tuple[int, int]]:
+def ida_star(board):
     N = len(board)
     path = []
     
-    def dfs(board: List[List[int]], g: int, bound: int, path: List[Tuple[int, int]]) -> int:
+    def dfs(board, g, bound, path):
         h = manhattan_distance(board)
         f = g + h
         if f > bound:
@@ -67,7 +65,6 @@ def ida_star(board: List[List[int]]) -> List[Tuple[int, int]]:
             return path
         if t == float('inf'):
             return None
-        bound = t
 
 if __name__ == "__main__":
     board = [
