@@ -1,3 +1,20 @@
+import random
+
+def generateRandomBoard(N):
+    board = [[0] * N for _ in range(N)]
+    numbers = list(range(1, N * N))
+    random.shuffle(numbers)
+    numbers_iter = iter(numbers)
+
+    for i in range(N):
+        for j in range(N):
+            if (i == N - 1) and (j == N - 1):
+                board[i][j] = 0  # Empty cell
+            else:
+                board[i][j] = next(numbers_iter)
+
+    return board
+
 def isGoal(board): #Define a function to check if a given board is in a goal state
     N = len(board)  #Get the size of the board (N x N)
     n = 1   #Initialize a variable to keep track of the expected value
@@ -66,18 +83,18 @@ def idaStar(board):    #Define the IDA* (Iterative Deepening A*) search algorith
         if t == float('inf'):
             return None #If no solution is found, return None
 
-if __name__ == "__main__":  #Main program entry point
-    board = [   #Define the initial state of the board
-        [1, 2, 3, 4],
-        [5, 6, 0, 8],
-        [9, 10, 7, 11],
-        [13, 14, 15, 12]
-    ]
+if __name__ == "__main__":
+    N = 4  # Specify the size of the board (N x N)
+    board = generateRandomBoard(N)  # Generate a random starting board
+
+    print("Random Initial Board:")
+    for row in board:
+        print(row)
     
-    solutionPath = idaStar(board) #Run the IDA* algorithm to find a solution path
-    if solutionPath:   #Display the result
-        print("Solution found:")
+    solutionPath = idaStar(board)  # Run the IDA* algorithm to find a solution path
+    if solutionPath:  # Display the result
+        print("\nSolution found:")
         for move in solutionPath:
-            print(move) #Print each move in the solution path
+            print(move)  # Print each move in the solution path
     else:
-        print("No solution found")  #Print a message if no solution is found
+        print("\nNo solution found")  # Print a message if no solution is found
