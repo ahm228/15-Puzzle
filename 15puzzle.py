@@ -1,19 +1,19 @@
 import random
 
 def generateRandomBoard(N):
-    board = [[0] * N for _ in range(N)]
-    numbers = list(range(1, N * N))
-    random.shuffle(numbers)
-    numbers_iter = iter(numbers)
+    board = [[0] * N for _ in range(N)] #Create an empty N x N game board filled with zeros
+    numbers = list(range(1, N * N)) #Generate a list of numbers from 1 to N*N - 1 (excluding 0)
+    random.shuffle(numbers) #Shuffle the list of numbers randomly to create a random puzzle configuration
+    numbers_iter = iter(numbers)    #Create an iterator for the shuffled numbers
 
-    for i in range(N):
-        for j in range(N):
+    for i in range(N):  #Populate the game board with shuffled numbers, leaving one cell empty (0)
+        for j in range(N):  #If we are at the last cell, set it as an empty cell (0)
             if (i == N - 1) and (j == N - 1):
                 board[i][j] = 0  # Empty cell
-            else:
+            else:   #Place the next shuffled number on the board
                 board[i][j] = next(numbers_iter)
 
-    return board
+    return board #Return the randomly generated game board
 
 def isGoal(board): #Define a function to check if a given board is in a goal state
     N = len(board)  #Get the size of the board (N x N)
@@ -84,17 +84,17 @@ def idaStar(board):    #Define the IDA* (Iterative Deepening A*) search algorith
             return None #If no solution is found, return None
 
 if __name__ == "__main__":
-    N = 4  # Specify the size of the board (N x N)
-    board = generateRandomBoard(N)  # Generate a random starting board
+    N = 4   #Specify the size of the board (N x N)
+    board = generateRandomBoard(N)  #Generate a random starting board
 
     print("Random Initial Board:")
     for row in board:
         print(row)
     
-    solutionPath = idaStar(board)  # Run the IDA* algorithm to find a solution path
-    if solutionPath:  # Display the result
+    solutionPath = idaStar(board)   #Run the IDA* algorithm to find a solution path
+    if solutionPath:    #Display the result
         print("\nSolution found:")
         for move in solutionPath:
-            print(move)  # Print each move in the solution path
+            print(move) #Print each move in the solution path
     else:
-        print("\nNo solution found")  # Print a message if no solution is found
+        print("\nNo solution found")    #Print a message if no solution is found
