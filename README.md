@@ -1,62 +1,59 @@
-15-Puzzle Solver
+Overview
 
-This Python program, 15puzzle.py, is a simple implementation of a solver for the classic 15-puzzle game. The 15-puzzle is a sliding puzzle that consists of a 4x4 grid with 15 numbered tiles and one blank space. The objective is to rearrange the tiles by sliding them into the blank space to achieve a specific goal state.
-How to Use
+The 15puzzle.py program is designed to solve the 15-puzzle game, which is a sliding puzzle that consists of a frame of numbered square tiles in random order with one tile missing. The program uses the Iterative-Deepening A* (IDA*) search algorithm and includes features to check the solvability of the puzzle.
+Features
 
-    Make sure you have Python 3 installed on your system.
+    Generates a random puzzle board of size NxN.
+    Checks if the puzzle is solvable.
+    Uses Manhattan distance heuristic for optimization.
+    Solves the puzzle using the IDA* algorithm.
 
-    Download the 15puzzle.py file.
+Dependencies
 
-    Run the program using the following command:
+    Python 3.x
+    random module (Built-in)
+
+How to Run
+
+    Make sure Python 3.x is installed.
+
+    Run the script from your terminal:
     python 15puzzle.py
-
-    The program will generate a random initial board configuration and attempt to solve it using the IDA* (Iterative Deepening A*) algorithm. If a solution is found, it will display the steps to solve the puzzle; otherwise, it will indicate that no solution was found.
 
 Functions
 
-generateRandomBoard(N)
-This function generates a random initial board configuration for the 15-puzzle. It takes a single argument N, which specifies the size of the puzzle (4x4 in this case). It returns a 4x4 list representing the board.
+generateRandomBoard(boardSize)
+Generates a random NxN board for the puzzle.
 
 isGoal(board)
-This function checks if a given board is in the goal state, where all tiles are in ascending order from left to right, top to bottom, with the blank space at the bottom-right corner.
+Checks if the board is in a goal state.
 
 manhattanDistance(board)
-This function calculates the Manhattan distance heuristic for a given board configuration. The Manhattan distance is the sum of the distances of each tile from its goal position.
+Computes the Manhattan distance heuristic for the given board state.
+
+isSolvable(board)
+Checks if the puzzle is solvable based on the inversion count.
 
 idaStar(board)
-This function implements the IDA* algorithm to solve the 15-puzzle. It uses depth-first search (DFS) with a heuristic to find the optimal solution. If a solution is found, it returns a list of moves to solve the puzzle; otherwise, it returns None to indicate that no solution was found.
+Solves the puzzle using the IDA* algorithm and returns the solution path if exists.
 
-Main Execution
-The program's main execution begins when __name__ is equal to "__main__". It generates a random initial board, displays it, and then attempts to solve the puzzle using the idaStar function. If a solution is found, it displays the sequence of moves to solve the puzzle; otherwise, it informs the user that no solution was found.
-
-Example execution
+Example Output
 
 Random Initial Board:
-[1, 2, 3, 4]
-[5, 6, 7, 8]
-[9, 10, 11, 12]
-[13, 14, 15, 0]
+[12, 5, 8, 3]
+[7, 15, 1, 9]
+[2, 10, 11, 14]
+[4, 13, 6, 0]
 
 Solution found:
-(3, 3)
-(3, 2)
-(3, 1)
-(3, 0)
-(2, 0)
-(2, 1)
-(2, 2)
-(2, 3)
-(1, 3)
-(1, 2)
-(1, 1)
-(1, 0)
-(0, 0)
-(0, 1)
-(0, 2)
-(0, 3)
+[(3, 2), (2, 2), (1, 2), ...]
 
-In this example, the program generates a random initial board configuration for the 15-puzzle and then successfully finds a solution using the IDA* algorithm. It displays the initial board and the sequence of moves required to solve the puzzle. Each move is represented as a pair of coordinates (row, column) indicating the tile to be moved into the blank space. The goal state is achieved when the board looks like this:
-[1, 2, 3, 4]
-[5, 6, 7, 8]
-[9, 10, 11, 12]
-[13, 14, 15, 0]
+or
+
+Random Initial Board:
+[7, 2, 3, 8]
+[9, 5, 1, 4]
+[0, 15, 14, 10]
+[13, 11, 12, 6]
+
+This puzzle is not solvable
