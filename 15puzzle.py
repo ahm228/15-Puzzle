@@ -41,7 +41,7 @@ def idaStar(board):    #Define the IDA* (Iterative Deepening A*) search algorith
                     zeroX, zeroY = i, j   #Find the coordinates of the empty cell
                     
         for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:   #Try moving the empty cell in four possible directions: right, down, left, up
-            newX,  = zeroX + dx, zeroY + dy #Calculate the new position
+            newX, newY = zeroX + dx, zeroY + dy #Calculate the new position
             if 0 <= newX < N and 0 <= newY < N:   #Swap the values between the empty cell and the neighboring cell
                 board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
                 path.append((newX, newY)) #Add the move to the path
