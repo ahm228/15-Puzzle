@@ -1,6 +1,8 @@
 Overview
 
-    The 15puzzle.py program is designed to solve the 15-puzzle game, which is a sliding puzzle that consists of a frame of numbered square tiles in random order with one tile missing. The program uses the Iterative-Deepening A* (IDA*) search algorithm and includes features to check the solvability of the puzzle.
+    The 15puzzle.py program is designed to solve the 15-puzzle game, 
+    which is a sliding puzzle that consists of a frame of numbered square tiles in random order with one tile missing.
+    The program uses the Iterative-Deepening A* (IDA*) search algorithm and includes features to check the solvability of the puzzle.
 
 Features
 
