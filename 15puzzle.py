@@ -1,52 +1,52 @@
 import random
 
-def generateRandomBoard(N):
-    board = [[0] * N for _ in range(N)]
-    numbers = list(range(1, N * N))
+def generateRandomBoard(boardSize):
+    board = [[0] * boardSize for _ in range(boardSize)]
+    numbers = list(range(1, boardSize * boardSize))
     random.shuffle(numbers)
-    for i in range(N):
-        for j in range(N):
-            if i == N - 1 and j == N - 1:
+    for i in range(boardSize):
+        for j in range(boardSize):
+            if i == boardSize - 1 and j == boardSize - 1:
                 board[i][j] = 0
             else:
                 board[i][j] = numbers.pop()
     return board
 
 def isGoal(board):
-    N = len(board)
+    boardSize = len(board)
     n = 1
-    for i in range(N):
-        for j in range(N):
-            if n == N * N:
+    for i in range(boardSize):
+        for j in range(boardSize):
+            if n == boardSize * boardSize:
                 return board[i][j] == 0
             if board[i][j] != n:
                 return False
             n += 1
 
 def manhattanDistance(board):
-    N = len(board)
+    boardSize = len(board)
     distance = 0
-    for i in range(N):
-        for j in range(N):
+    for i in range(boardSize):
+        for j in range(boardSize):
             if board[i][j] == 0:
                 continue
             targetVal = board[i][j] - 1
-            targetX, targetY = divmod(targetVal, N)
+            targetX, targetY = divmod(targetVal, boardSize)
             distance += abs(i - targetX) + abs(j - targetY)
     return distance
 
 def isSolvable(board):
-    N = len(board)
-    invCount = 0
+    boardSize = len(board)
+    inversionCount = 0
     flatBoard = [cell for row in board for cell in row if cell != 0]
     for i in range(len(flatBoard) - 1):
         for j in range(i+1, len(flatBoard)):
             if flatBoard[i] > flatBoard[j]:
-                invCount += 1
-    return invCount % 2 == 0
+                inversionCount += 1
+    return inversionCount % 2 == 0
 
 def idaStar(board):
-    N = len(board)
+    boardSize = len(board)
     path = []
 
     def dfs(board, g, bound, parentX, parentY):
@@ -62,15 +62,15 @@ def idaStar(board):
         minBound = float('inf')
         zeroX, zeroY = 0, 0
 
-        for i in range(N):
-            for j in range(N):
+        for i in range(boardSize):
+            for j in range(boardSize):
                 if board[i][j] == 0:
                     zeroX, zeroY = i, j
 
         for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
             newX, newY = zeroX + dx, zeroY + dy
 
-            if 0 <= newX < N and 0 <= newY < N and (newX != parentX or newY != parentY):
+            if 0 <= newX < boardSize and 0 <= newY < boardSize and (newX != parentX or newY != parentY):
                 board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
                 path.append((newX, newY))
 
@@ -96,8 +96,8 @@ def idaStar(board):
         bound = t
 
 if __name__ == "__main__":
-    N = 4
-    board = generateRandomBoard(N)
+    boardSize = 4
+    board = generateRandomBoard(boardSize)
 
     print("Random Initial Board:")
     for row in board:
