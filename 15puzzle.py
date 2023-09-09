@@ -9,7 +9,7 @@ def generateRandomBoard(N):
             if i == N - 1 and j == N - 1:
                 board[i][j] = 0
             else:
-                board[i][j] = numbers.pop(0)
+                board[i][j] = numbers.pop()
     return board
 
 def isGoal(board):
@@ -30,22 +30,26 @@ def manhattanDistance(board):
         for j in range(N):
             if board[i][j] == 0:
                 continue
-            target_val = board[i][j] - 1
-            target_x, target_y = divmod(target_val, N)
-            distance += abs(i - target_x) + abs(j - target_y)
+            targetVal = board[i][j] - 1
+            targetX, targetY = divmod(targetVal, N)
+            distance += abs(i - targetX) + abs(j - targetY)
     return distance
+
+def isSolvable(board):
+    N = len(board)
+    invCount = 0
+    flatBoard = [cell for row in board for cell in row if cell != 0]
+    for i in range(len(flatBoard) - 1):
+        for j in range(i+1, len(flatBoard)):
+            if flatBoard[i] > flatBoard[j]:
+                invCount += 1
+    return invCount % 2 == 0
 
 def idaStar(board):
     N = len(board)
     path = []
-    visited = set()
 
-    def dfs(board, g, bound):
-        state_str = str(board)
-        if state_str in visited:
-            return float('inf')
-        visited.add(state_str)
-
+    def dfs(board, g, bound, parentX, parentY):
         h = manhattanDistance(board)
         f = g + h
 
@@ -55,38 +59,36 @@ def idaStar(board):
         if isGoal(board):
             return -1
 
-        min_bound = float('inf')
-        zero_x, zero_y = 0, 0
+        minBound = float('inf')
+        zeroX, zeroY = 0, 0
 
         for i in range(N):
             for j in range(N):
                 if board[i][j] == 0:
-                    zero_x, zero_y = i, j
+                    zeroX, zeroY = i, j
 
         for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            new_x, new_y = zero_x + dx, zero_y + dy
+            newX, newY = zeroX + dx, zeroY + dy
 
-            if 0 <= new_x < N and 0 <= new_y < N:
-                board[zero_x][zero_y], board[new_x][new_y] = board[new_x][new_y], board[zero_x][zero_y]
-                path.append((new_x, new_y))
+            if 0 <= newX < N and 0 <= newY < N and (newX != parentX or newY != parentY):
+                board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
+                path.append((newX, newY))
 
-                t = dfs(board, g + 1, bound)
+                t = dfs(board, g + 1, bound, zeroX, zeroY)
 
                 if t == -1:
                     return -1
-                if t < min_bound:
-                    min_bound = t
+                if t < minBound:
+                    minBound = t
 
                 path.pop()
-                board[zero_x][zero_y], board[new_x][new_y] = board[new_x][new_y], board[zero_x][zero_y]
+                board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
 
-        visited.remove(state_str)
-        return min_bound
+        return minBound
 
     bound = manhattanDistance(board)
     while True:
-        visited.clear()
-        t = dfs(board, 0, bound)
+        t = dfs(board, 0, bound, -1, -1)
         if t == -1:
             return path
         if t == float('inf'):
@@ -101,10 +103,13 @@ if __name__ == "__main__":
     for row in board:
         print(row)
 
-    solutionPath = idaStar(board)
-    if solutionPath:
-        print("\nSolution found:")
-        for move in solutionPath:
-            print(move)
+    if isSolvable(board):
+        solutionPath = idaStar(board)
+        if solutionPath:
+            print("\nSolution found:")
+            for move in solutionPath:
+                print(move)
+        else:
+            print("\nNo solution found")
     else:
-        print("\nNo solution found")
+        print("\nThis puzzle is not solvable")
