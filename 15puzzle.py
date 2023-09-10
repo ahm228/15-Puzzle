@@ -61,37 +61,42 @@ def idaStar(board): #Function to perform the IDA* search algorithm to find a sol
         h = manhattanDistance(board)
         f = g + h
 
-        if f > bound:   #If the current cost exceeds the bound, backtrack
+        # Display the board at each step
+        print("Current Board:")
+        for row in board:
+            print(row)
+
+        if f > bound:  # If the current cost exceeds the bound, backtrack
             return f
 
-        if isGoal(board):   #If the board is the goal state, return -1 to indicate success
+        if isGoal(board):  # If the board is the goal state, return -1 to indicate success
             return -1
 
         minBound = float('inf')
         zeroX, zeroY = 0, 0
 
-        for i in range(boardSize):  #Find the position of the zero (empty) cell
+        for i in range(boardSize):  # Find the position of the zero (empty) cell
             for j in range(boardSize):
                 if board[i][j] == 0:
                     zeroX, zeroY = i, j
 
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:   #Explore adjacent moves (up, down, left, right)
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:  # Explore adjacent moves (up, down, left, right)
             newX, newY = zeroX + dx, zeroY + dy
 
-            #Check if the new position is within bounds and not the parent position
+            # Check if the new position is within bounds and not the parent position
             if 0 <= newX < boardSize and 0 <= newY < boardSize and (newX != parentX or newY != parentY):
-                #Swap the empty cell with the neighboring cell
+                # Swap the empty cell with the neighboring cell
                 board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
                 path.append((newX, newY))
 
-                t = dfs(board, g + 1, bound, zeroX, zeroY)  #Recursively explore this move
+                t = dfs(board, g + 1, bound, zeroX, zeroY)  # Recursively explore this move
 
-                if t == -1: #If a solution is found, return -1
+                if t == -1:  # If a solution is found, return -1
                     return -1
-                if t < minBound:    #Update the minimum bound for this branch
+                if t < minBound:  # Update the minimum bound for this branch
                     minBound = t
 
-                path.pop()  #Backtrack by undoing the move
+                path.pop()  # Backtrack by undoing the move
                 board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
 
         return minBound
