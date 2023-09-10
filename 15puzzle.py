@@ -16,7 +16,7 @@ def isGoal(board):  #Function to check if the current board is the goal state
     boardSize = len(board)
     n = 1
     for i in range(boardSize):
-        for j in range(boardSize): #If n reaches the last value (N*N), the last cell should be 0
+        for j in range(boardSize):
             if n == boardSize * boardSize:
                 return board[i][j] == 0
             if board[i][j] != n:
@@ -35,6 +35,18 @@ def manhattanDistance(board):   #Function to calculate the Manhattan distance he
             distance += abs(i - targetX) + abs(j - targetY)
     return distance
 
+def manhattanDelta(board, oldX, oldY, newX, newY, boardSize):   #Function to incrementally update Manhattan distance after a move
+    delta = 0
+    for (x, y) in [(oldX, oldY), (newX, newY)]: #Calculate the delta for both old and new positions
+        value = board[x][y]
+        if value == 0:
+            continue
+        targetX, targetY = divmod(value - 1, boardSize)
+        delta -= abs(x - targetX) + abs(y - targetY)
+        targetX, targetY = divmod(value - 1, boardSize)
+        delta += abs((x + newX - oldX) - targetX) + abs((y + newY - oldY) - targetY)
+    return delta
+
 '''
 If the total number of inversions is even, the puzzle is solvable.
 If the total number of inversions is odd, the puzzle is unsolvable.
@@ -43,12 +55,13 @@ In puzzles with an odd number of inversions, there is no way to transform the pu
 because each swap changes the parity (odd to even or even to odd), making it impossible to reach a solved 
 state with an even number of inversions.
 '''
+
 def isSolvable(board):  #Function to check if a given board is solvable
     boardSize = len(board)
     inversionCount = 0
     flatBoard = [cell for row in board for cell in row if cell != 0]    #Flatten the board and count inversions
     for i in range(len(flatBoard) - 1):
-        for j in range(i+1, len(flatBoard)):
+        for j in range(i + 1, len(flatBoard)):
             if flatBoard[i] > flatBoard[j]:
                 inversionCount += 1
     return inversionCount % 2 == 0  #A board is solvable if the inversion count is even
@@ -56,61 +69,72 @@ def isSolvable(board):  #Function to check if a given board is solvable
 def idaStar(board): #Function to perform the IDA* search algorithm to find a solution path
     boardSize = len(board)
     path = []
+    visited = set()
 
-    def dfs(board, g, bound, parentX, parentY):
+    def dfs(board, g, bound, parentX, parentY): #Internal DFS function for IDA*
         h = manhattanDistance(board)
         f = g + h
+        boardTuple = tuple(tuple(row) for row in board)
 
-        # Display the board at each step
-        print("Current Board:")
+        print("Current Board:") #Display the board at each step
         for row in board:
             print(row)
 
-        if f > bound:  # If the current cost exceeds the bound, backtrack
+        if boardTuple in visited:   #Avoid revisiting the same state
+            return float('inf')
+
+        visited.add(boardTuple)
+
+        if f > bound:   #Bound check
+            visited.remove(boardTuple)
             return f
 
-        if isGoal(board):  # If the board is the goal state, return -1 to indicate success
+        if isGoal(board):   #Goal check
+            visited.remove(boardTuple)
             return -1
 
         minBound = float('inf')
         zeroX, zeroY = 0, 0
 
-        for i in range(boardSize):  # Find the position of the zero (empty) cell
+        for i in range(boardSize):  #Find the position of the zero (empty) cell
             for j in range(boardSize):
                 if board[i][j] == 0:
                     zeroX, zeroY = i, j
 
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:  # Explore adjacent moves (up, down, left, right)
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:   #Explore adjacent moves (up, down, left, right)
             newX, newY = zeroX + dx, zeroY + dy
 
-            # Check if the new position is within bounds and not the parent position
             if 0 <= newX < boardSize and 0 <= newY < boardSize and (newX != parentX or newY != parentY):
-                # Swap the empty cell with the neighboring cell
-                board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
+                delta = manhattanDelta(board, zeroX, zeroY, newX, newY, boardSize)
+                h += delta
+
+                board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY] #Swap the empty cell with the neighboring cell
                 path.append((newX, newY))
 
-                t = dfs(board, g + 1, bound, zeroX, zeroY)  # Recursively explore this move
+                t = dfs(board, g + 1, bound, zeroX, zeroY)  #Recursively perform DFS
 
-                if t == -1:  # If a solution is found, return -1
+                if t == -1: #If a solution is found
                     return -1
-                if t < minBound:  # Update the minimum bound for this branch
+                if t < minBound:    #Update the minimum bound for the next iteration
                     minBound = t
 
-                path.pop()  # Backtrack by undoing the move
+                path.pop()  #Backtrack
                 board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
+                h -= delta
 
+        visited.remove(boardTuple)
         return minBound
 
-    bound = manhattanDistance(board)
+    bound = manhattanDistance(board)    #Start the IDA* algorithm
     while True:
         t = dfs(board, 0, bound, -1, -1)
         if t == -1:
-            return path #Return the solution path
+            return path
         if t == float('inf'):
-            return None #No solution found
+            return None
         bound = t
 
-if __name__ == "__main__":
+if __name__ == "__main__":  #Main code to execute the program
     boardSize = 4
     board = generateRandomBoard(boardSize)
 
@@ -118,7 +142,7 @@ if __name__ == "__main__":
     for row in board:
         print(row)
 
-    if isSolvable(board):
+    if isSolvable(board):   #Check if the board is solvable and solve it if it is
         solutionPath = idaStar(board)
         if solutionPath:
             print("\nSolution found:")
