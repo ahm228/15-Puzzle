@@ -12,6 +12,12 @@ def generateRandomBoard(boardSize):
 
         if isSolvable(board, boardSize):
             return board
+        
+def printBoard(board, boardSize):
+    for i in range(boardSize):
+        for j in range(boardSize):
+            print(board[i * boardSize + j], end='\t')
+        print()
 
 # Function to check if the current board is the goal state
 def isGoal(board, boardSize):
@@ -109,7 +115,8 @@ def idaStar(board, boardSize):
 if __name__ == "__main__":
     boardSize = 4
     board = generateRandomBoard(boardSize)
-    print("Random Initial Board:", board)
+    print("Random Initial Board:")
+    printBoard(board, boardSize)
     if isSolvable(board, boardSize):
         solutionPath = idaStar(board, boardSize)
         if solutionPath:
