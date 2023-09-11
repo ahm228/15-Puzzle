@@ -1,55 +1,49 @@
 import random
 
-#Function to generate a random and solvable NxN puzzle board
+# Function to generate a random and solvable NxN puzzle board
 def generateRandomBoard(boardSize):
     while True:
-        board = [[0] * boardSize for _ in range(boardSize)]
+        board = [0] * (boardSize * boardSize)
         numbers = list(range(1, boardSize * boardSize))
         random.shuffle(numbers)
-        for i in range(boardSize):
-            for j in range(boardSize):
-                if i == boardSize - 1 and j == boardSize - 1:
-                    board[i][j] = 0
-                else:
-                    board[i][j] = numbers.pop()
-        
-        #Ensure that the generated board is solvable
-        if isSolvable(board):
+        for i in range(boardSize * boardSize - 1):
+            board[i] = numbers.pop()
+        board[-1] = 0
+
+        if isSolvable(board, boardSize):
             return board
 
-#Function to check if the current board is the goal state
-def isGoal(board):
-    boardSize = len(board)
-    n = 0   #Initialize counter variable
-    for i in range(boardSize):
-        for j in range(boardSize):
-            if board[i][j] != n:
-                return False
-            n = (n + 1) % (boardSize * boardSize)
+# Function to check if the current board is the goal state
+def isGoal(board, boardSize):
+    for i in range(boardSize * boardSize):
+        if board[i] != i:
+            return False
     return True
 
-#Function to calculate the Manhattan distance heuristic for a given board
-def manhattanDistance(board):
-    boardSize = len(board)
+# Function to calculate the Manhattan distance heuristic for a given board
+def manhattanDistance(board, boardSize):
     distance = 0
-    for i in range(boardSize):
-        for j in range(boardSize):
-            if board[i][j] == 0:
-                continue
-            targetVal = board[i][j] - 1
-            targetX, targetY = divmod(targetVal, boardSize)
-            distance += abs(i - targetX) + abs(j - targetY)
+    for i in range(boardSize * boardSize):
+        if board[i] == 0:
+            continue
+        targetVal = board[i] - 1
+        x, y = divmod(i, boardSize)
+        targetX, targetY = divmod(targetVal, boardSize)
+        distance += abs(x - targetX) + abs(y - targetY)
     return distance
 
-#Function to incrementally update Manhattan distance after a move
-def manhattanDelta(board, oldX, oldY, newX, newY, boardSize):
+# Function to incrementally update Manhattan distance after a move
+def manhattanDelta(board, oldIndex, newIndex, boardSize):
     delta = 0
-    for (ox, oy, nx, ny) in [(oldX, oldY, newX, newY), (newX, newY, oldX, oldY)]:
-        value = board[ox][oy]
+    for oi, ni in [(oldIndex, newIndex), (newIndex, oldIndex)]:
+        value = board[oi]
         if value == 0:
             continue
-        targetX, targetY = divmod(value - 1, boardSize)
-        delta += abs(targetX - nx) + abs(targetY - ny) - abs(targetX - ox) - abs(targetY - oy)
+        targetVal = value - 1
+        x, y = divmod(oi, boardSize)
+        targetX, targetY = divmod(targetVal, boardSize)
+        newX, newY = divmod(ni, boardSize)
+        delta += abs(targetX - newX) + abs(targetY - newY) - abs(targetX - x) - abs(targetY - y)
     return delta
 
 '''
@@ -61,82 +55,51 @@ because each swap changes the parity (odd to even or even to odd), making it imp
 state with an even number of inversions.
 '''
 
-#Function to check if a given board is solvable
-def isSolvable(board):
-    boardSize = len(board)
+# Function to check if a given board is solvable
+def isSolvable(board, boardSize):
     inversionCount = 0
-    flatBoard = [cell for row in board for cell in row if cell != 0]
+    flatBoard = [cell for cell in board if cell != 0]
     for i in range(len(flatBoard) - 1):
         for j in range(i + 1, len(flatBoard)):
             if flatBoard[i] > flatBoard[j]:
                 inversionCount += 1
     return inversionCount % 2 == 0
 
-#Function to perform the IDA* search algorithm to find a solution path
-def idaStar(board):
-    boardSize = len(board)
-    path = []   #To store the solution path
+# Function to perform the IDA* search algorithm to find a solution path
+def idaStar(board, boardSize):
+    path = []
 
-    #Internal DFS function for IDA*
-    def dfs(board, g, bound, zeroX, zeroY):
-        h = manhattanDistance(board)  #Calculate heuristic
-        f = g + h 
-        #f = total cost, g = actual cost (incremented at each step), h = heuristic cost (computed using Manhattan distance)
-
-        print("Current Board:") #Display the board at each step
-        for row in board:
-            print(row)
-
-        #Bound check
+    def dfs(board, g, bound, zeroIndex):
+        h = manhattanDistance(board, boardSize)
+        f = g + h
         if f > bound:
             return f
-
-        #Goal check
-        if isGoal(board):
+        if isGoal(board, boardSize):
             return -1
-
-        minBound = float('inf') #Initialize minBound
-
-        #Explore adjacent moves (up, down, left, right)
+        minBound = float('inf')
         for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            newX, newY = zeroX + dx, zeroY + dy
-
+            x, y = divmod(zeroIndex, boardSize)
+            newX, newY = x + dx, y + dy
             if 0 <= newX < boardSize and 0 <= newY < boardSize:
-                delta = manhattanDelta(board, zeroX, zeroY, newX, newY, boardSize)
+                newZeroIndex = newX * boardSize + newY
+                delta = manhattanDelta(board, zeroIndex, newZeroIndex, boardSize)
                 h += delta
-
-                #Swap the empty cell with the neighboring cell
-                board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
-                path.append((newX, newY))
-
-                #Recursively perform DFS
-                t = dfs(board, g + 1, bound, newX, newY)
-
-                #If a solution is found
+                board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
+                path.append(newZeroIndex)
+                t = dfs(board, g + 1, bound, newZeroIndex)
                 if t == -1:
                     return -1
-
-                #Update the minimum bound for the next iteration
                 if t < minBound:
                     minBound = t
-
-                #Backtrack
                 path.pop()
-                board[zeroX][zeroY], board[newX][newY] = board[newX][newY], board[zeroX][zeroY]
+                board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
                 h -= delta
-
         return minBound
 
-    bound = manhattanDistance(board)    #Start the IDA* algorithm
-    zeroX, zeroY = 0, 0 #Position of zero (empty cell)
-
-    for i in range(boardSize):
-        for j in range(boardSize):
-            if board[i][j] == 0:
-                zeroX, zeroY = i, j
-
+    bound = manhattanDistance(board, boardSize)
+    zeroIndex = board.index(0)
     while True:
-        t = dfs(board, 0, bound, zeroX, zeroY)
+        t = dfs(board, 0, bound, zeroIndex)
         if t == -1:
             return path
         if t == float('inf'):
@@ -146,17 +109,11 @@ def idaStar(board):
 if __name__ == "__main__":
     boardSize = 4
     board = generateRandomBoard(boardSize)
-
-    print("Random Initial Board:")
-    for row in board:
-        print(row)
-
-    if isSolvable(board):
-        solutionPath = idaStar(board)
+    print("Random Initial Board:", board)
+    if isSolvable(board, boardSize):
+        solutionPath = idaStar(board, boardSize)
         if solutionPath:
-            print("\nSolution found:")
-            for move in solutionPath:
-                print(move)
+            print("\nSolution found:", solutionPath)
         else:
             print("\nNo solution found")
     else:
