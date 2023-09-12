@@ -2,13 +2,14 @@ import random
 
 #Function to generate a random and solvable NxN puzzle board
 def generateRandomBoard(boardSize):
+
     #Continue trying until a solvable board is found
     while True:
         #Initialize a 1D board of length boardSize * boardSize with zeros
         board = [0] * (boardSize * boardSize)
         
-        # Create a list of numbers from 1 up to (boardSize * boardSize) - 1
-        # These numbers represent the tiles that will go on the board
+        #Create a list of numbers from 1 up to (boardSize * boardSize) - 1
+        #These numbers represent the tiles that will go on the board
         numbers = list(range(1, boardSize * boardSize))
         
         #Randomize the initial state of the board
@@ -18,7 +19,7 @@ def generateRandomBoard(boardSize):
         for i in range(boardSize * boardSize - 1):
             board[i] = numbers.pop()
         
-        #Set the last position on the board as 0
+        #Set the last position on the board as 0 //NOTE: Starting board need not have zero in final position, only goal state needs this
         board[-1] = 0
 
         #Check if the generated board is solvable
@@ -57,10 +58,10 @@ def manhattanDistance(board, boardSize):
             continue
         
         #Calculate the target position (goal state) of the current tile
-        targetVal = board[i] - 1  #Target value is one less than the current value
+        targetVal = board[i] - 1    #Target value is one less than the current value
         
         #Convert 1D index to 2D coordinates for current position
-        x, y = divmod(i, boardSize)
+        x, y = divmod(i, boardSize) #NOTE: Explain functionality of divmod
         
         #Convert 1D index to 2D coordinates for target position
         targetX, targetY = divmod(targetVal, boardSize)
@@ -113,12 +114,12 @@ def isSolvable(board, boardSize):
     inversionCount = 0
     
     #Loop through the board to count inversions
-    for i in range(len(board) - 1):  #Iterate from the first element to the penultimate element
-        if board[i] == 0:  #Skip the zero tile
+    for i in range(len(board) - 1): #Iterate from the first element to the penultimate element
+        if board[i] == 0:   #Skip the zero tile
             continue
        
         for j in range(i + 1, len(board)):  #Iterate from the element after i to the last element
-            if board[j] == 0:  #Skip the zero tile
+            if board[j] == 0:   #Skip the zero tile
                 continue
             
             #Check if an inversion exists
@@ -135,38 +136,38 @@ def idaStar(board, boardSize):
     def dfs(board, g, bound, zeroIndex):
         h = manhattanDistance(board, boardSize)
         f = g + h
-
         #f = total cost, g = actual cost (incremented at each step), h = heuristic cost (computed using Manhattan distance)
-        if f > bound: #If the estimated cost exceeds the current bound, return the estimated cost
+
+        if f > bound:   #If the estimated cost exceeds the current bound, return the estimated cost
             return f
         
-        if isGoal(board, boardSize): #Check if the current board is the goal state
+        if isGoal(board, boardSize):    #Check if the current board is the goal state
             return -1
         
-        minBound = float('inf') #Initialize minBound to an arbitrarily large number
+        minBound = float('inf') #Initialize minBound to an arbitrarily large number //NOTE: magic number
         
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]: #Explore adjacent moves
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:   #Explore adjacent moves
             x, y = divmod(zeroIndex, boardSize) #Get the current x, y coordinates of the zero
             newX, newY = x + dx, y + dy
             
             if 0 <= newX < boardSize and 0 <= newY < boardSize: #Check if new coordinates are valid (within bounds)
-                newZeroIndex = newX * boardSize + newY #Calculate new index for zero
-                delta = manhattanDelta(board, zeroIndex, newZeroIndex, boardSize) #Calculate how this move will affect the Manhattan distance
-                h += delta #Add the delta to the heuristic
-                board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex] #Perform the move
-                path.append(newZeroIndex) #Add this move to the path
-                t = dfs(board, g + 1, bound, newZeroIndex) #Recursively call DFS with new board state
+                newZeroIndex = newX * boardSize + newY  #Calculate new index for zero
+                delta = manhattanDelta(board, zeroIndex, newZeroIndex, boardSize)   #Calculate how this move will affect the Manhattan distance
+                h += delta  #Add the delta to the heuristic
+                board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]   #Perform the move
+                path.append(newZeroIndex)   #Add this move to the path
+                t = dfs(board, g + 1, bound, newZeroIndex)  #Recursively call DFS with new board state
                 
                 if t == -1: #Goal is found
                     return -1
                 
-                if t < minBound: #Update the minimum bound needed for next iteration
+                if t < minBound:    #Update the minimum bound needed for next iteration
                     minBound = t
 
                 #Backtrack, undo the move and remove the last added move in path
                 path.pop() 
                 board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
-                h -= delta #Subtract the delta from the heuristic to backtrack
+                h -= delta  #Subtract the delta from the heuristic to backtrack
 
         return minBound
 
@@ -183,7 +184,7 @@ def idaStar(board, boardSize):
         if t == float('inf'):
             return None
         
-        bound = t #Update the bound for the next round of IDA*
+        bound = t   #Update the bound for the next round of IDA*
 
 if __name__ == "__main__":
     boardSize = 4 #NOTE: consider taking this as an input, allowing for board sizes other than 4 x 4
