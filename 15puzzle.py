@@ -61,7 +61,11 @@ def manhattanDistance(board, boardSize):
         targetVal = board[i] - 1    #Target value is one less than the current value
         
         #Convert 1D index to 2D coordinates for current position
-        x, y = divmod(i, boardSize) #NOTE: Explain functionality of divmod
+        x, y = divmod(i, boardSize) 
+
+        #divmod function takes two numbers and returns a pair where the first element of the pair is the quotient, and the second is the remainder
+        #Quotient represents the row number in the 2D board
+        #Remainder represents the column number in the 2D board
         
         #Convert 1D index to 2D coordinates for target position
         targetX, targetY = divmod(targetVal, boardSize)
@@ -144,7 +148,7 @@ def idaStar(board, boardSize):
         if isGoal(board, boardSize):    #Check if the current board is the goal state
             return -1
         
-        minBound = float('inf') #Initialize minBound to an arbitrarily large number //NOTE: magic number
+        minBound = float('inf') #Initialize minBound to an arbitrarily large number
         
         for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:   #Explore adjacent moves
             x, y = divmod(zeroIndex, boardSize) #Get the current x, y coordinates of the zero
@@ -193,7 +197,8 @@ if __name__ == "__main__":
     print("Random Initial Board:")
     printBoard(board, boardSize)
     
-    solutionPath = idaStar(board, boardSize) #NOTE: explain solutionPath output
+    solutionPath = idaStar(board, boardSize) 
+    #Each entry in the solutionPath represents the new position of the zero tile after making a move
         
     if solutionPath:
         print("\nSolution found:", solutionPath)
