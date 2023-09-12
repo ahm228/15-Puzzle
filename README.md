@@ -1,41 +1,45 @@
-N-Puzzle Solver using IDA* Algorithm
+NxN Puzzle Solver with IDA* Algorithm
+Description
 
-    This Python script solves the N-Puzzle problem using the IDA* (Iterative-Deepening A*) algorithm. The program employs a 1D list to represent the board state and utilizes an efficient method to update the Manhattan distance after each move. It is capable of generating random, solvable N x N boards and finding the solution path.
+This Python script is a solver for the NxN puzzle game using the Iterative-Deepening A* (IDA*) search algorithm. The puzzle consists of an NxN grid of tiles labeled from 1 to N*N - 1, with one tile missing (represented as 0). The puzzle is solved when all tiles are in ascending order, ending with the missing tile at the bottom-right corner.
+Features
 
-    Functions
+    Generate a random and solvable NxN board
+    Display the board in a readable format
+    Check if a board is in its goal state
+    Calculate the Manhattan distance heuristic for a board
+    Incrementally update Manhattan distance when making a move
+    Check if a given board is solvable using inversion count
+    Solve the puzzle using the IDA* algorithm
 
-        generateRandomBoard(boardSize)
-            This function generates a random solvable N x N puzzle board. It uses a while loop to continue generating boards until it finds one that is solvable.
+Requirements
 
-        isGoal(board, boardSize)
-            This function checks if the current board state is the goal state. It ensures that the last tile is zero and that the rest of the tiles are in ascending order.
+    Python 3.x
+    No additional libraries are required
 
-        manhattanDistance(board, boardSize)
-            This function calculates the Manhattan distance for a given board state. Manhattan distance is the sum of the absolute differences between each tile's current position and its position in the goal state.
+How to Use
 
-        manhattanDelta(board, oldIndex, newIndex, boardSize)
-            This function incrementally updates the Manhattan distance after each move. This improves the efficiency of heuristic calculation.
+    Clone the repository or download the Python script.
+    Run the script: python <script-name>.py
+    Input the board size when prompted (N for an NxN board).
+    The script will generate a random solvable board, display it, and then find a solution path if one exists.
 
-        isSolvable(board, boardSize)
-            This function checks if a given board is solvable by counting the number of inversions in the board. An inversion is a pair of tiles that are in the wrong order relative to their positions in the goal state.
+Code Structure
+Functions
 
-        idaStar(board, boardSize)
-            This function performs the IDA* search algorithm to find the solution path for a given board. It explores different states of the board by swapping the empty tile (0) with adjacent tiles and updates the bound based on the heuristic and cost-to-come.
+    generateRandomBoard(boardSize): Generates a random and solvable board of size NxN.
+    printBoard(board, boardSize): Prints the board in a readable format.
+    isGoal(board, boardSize): Checks if the board is in the goal state.
+    manhattanDistance(board, boardSize): Calculates the Manhattan distance heuristic for a board.
+    manhattanDelta(board, oldIndex, newIndex, boardSize): Incrementally updates the Manhattan distance when making a move.
+    isSolvable(board, boardSize): Checks if a given board is solvable.
+    idaStar(board, boardSize): Main function to perform the IDA* algorithm.
 
-    Usage
+Algorithms
 
-        Run the script.
-        The initial random board will be displayed.
-        The script will output the current board state at each step as it iterates through the IDA* algorithm.
-        If a solution is found, the solution path will be displayed.
+    IDA* Algorithm: Used for solving the puzzle.
+    Manhattan Distance: Used as a heuristic to estimate the distance to the goal state.
 
-    Example Output
-    
-    Random Initial Board:
-    0	12	5	8	
-    7	15	1	3	
-    2	10	11	9	
-    4	13	14	6	
+Limitations
 
-    Solution found:
-    [(3, 2), (2, 2), (1, 2), ...]
+    The program may take a long time to find the solution for large board sizes.
