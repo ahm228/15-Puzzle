@@ -101,24 +101,32 @@ state with an even number of inversions.
 
 #Function to check if a given board is solvable
 def isSolvable(board, boardSize):
-    #Initialize the inversion counter to 0
     inversionCount = 0
     
-    #Loop through the board to count inversions
-    for i in range(len(board) - 1): #Iterate from the first element to the penultimate element
-        if board[i] == 0:   #Skip the zero tile
+    for i in range(len(board) - 1):
+        if board[i] == 0:
             continue
-       
-        for j in range(i + 1, len(board)):  #Iterate from the element after i to the last element
-            if board[j] == 0:   #Skip the zero tile
+        for j in range(i + 1, len(board)):
+            if board[j] == 0:
                 continue
-            
-            #Check if an inversion exists
             if board[i] > board[j]:
                 inversionCount += 1
-    
-    #For a board to be solvable, the number of inversions must be even
-    return inversionCount % 2 == 0
+
+    #For board where N is even
+    if boardSize % 2 == 0:
+        return inversionCount % 2 == 0
+
+    #For board where N is odd
+    else:
+        #Find the row position of the blank tile counting from the bottom
+        zeroRowFromBottom = (boardSize - board.index(0) // boardSize)
+        
+        #If zero is on an even row from the bottom
+        if zeroRowFromBottom % 2 == 0:
+            return inversionCount % 2 != 0
+        #If zero is on an odd row from the bottom
+        else:
+            return inversionCount % 2 == 0
 
 #Function to perform the IDA* search algorithm to find a solution path
 def idaStar(board, boardSize):
@@ -178,7 +186,7 @@ def idaStar(board, boardSize):
         bound = t   #Update the bound for the next round of IDA*
 
 if __name__ == "__main__":
-    boardSize = 4 #NOTE: consider taking this as an input, allowing for board sizes other than 4 x 4
+    boardSize = int(input("Enter the board size (N for NxN): "))
     board = generateRandomBoard(boardSize)
 
     print("Random Initial Board:")
