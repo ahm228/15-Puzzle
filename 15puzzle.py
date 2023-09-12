@@ -2,31 +2,18 @@ import random
 
 #Function to generate a random and solvable NxN puzzle board
 def generateRandomBoard(boardSize):
-
     #Continue trying until a solvable board is found
     while True:
         #Initialize a 1D board of length boardSize * boardSize with zeros
-        board = [0] * (boardSize * boardSize)
-        
-        #Create a list of numbers from 1 up to (boardSize * boardSize) - 1
-        #These numbers represent the tiles that will go on the board
-        numbers = list(range(1, boardSize * boardSize))
+        board = list(range(boardSize * boardSize))
         
         #Randomize the initial state of the board
-        random.shuffle(numbers)
+        random.shuffle(board)
         
-        #Fill in the board with the shuffled numbers
-        for i in range(boardSize * boardSize - 1):
-            board[i] = numbers.pop()
-        
-        #Set the last position on the board as 0 //NOTE: Starting board need not have zero in final position, only goal state needs this
-        board[-1] = 0
-
         #Check if the generated board is solvable
         if isSolvable(board, boardSize):
-            #If it is, return the board
             return board
-        
+
 def printBoard(board, boardSize):
     for i in range(boardSize): 
         for j in range(boardSize):
