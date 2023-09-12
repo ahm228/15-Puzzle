@@ -193,7 +193,7 @@ if __name__ == "__main__":
     print("Random Initial Board:")
     printBoard(board, boardSize)
     
-    solutionPath = idaStar(board, boardSize)
+    solutionPath = idaStar(board, boardSize) #NOTE: explain solutionPath output
         
     if solutionPath:
         print("\nSolution found:", solutionPath)
