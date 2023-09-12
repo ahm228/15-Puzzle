@@ -20,7 +20,7 @@ Requirements
 How to Use
 
     Clone the repository or download the Python script.
-    Run the script: python <script-name>.py
+    Run the script: python 15puzzle.py
     Input the board size when prompted (N for an NxN board).
     The script will generate a random solvable board, display it, and then find a solution path if one exists.
 
