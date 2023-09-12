@@ -119,7 +119,7 @@ def isSolvable(board, boardSize):
     #For board where N is odd
     else:
         #Find the row position of the blank tile counting from the bottom
-        zeroRowFromBottom = (boardSize - board.index(0) // boardSize)
+        zeroRowFromBottom = (boardSize - (board.index(0) // boardSize))
         
         #If zero is on an even row from the bottom
         if zeroRowFromBottom % 2 == 0:
