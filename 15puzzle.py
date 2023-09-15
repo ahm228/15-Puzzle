@@ -111,22 +111,20 @@ def isSolvable(board, boardSize):
                 continue
             if board[i] > board[j]:
                 inversionCount += 1
-
+    
+    #Find the row position of the blank tile counting from the bottom
+    zeroRowFromBottom = (boardSize - (board.index(0) // boardSize))
+    
     #For board where N is even
     if boardSize % 2 == 0:
-        return inversionCount % 2 == 0
+        if zeroRowFromBottom % 2 == 0:  # zero is on an even row counting from the bottom
+            return inversionCount % 2 != 0
+        else:  # zero is on an odd row counting from the bottom
+            return inversionCount % 2 == 0
 
     #For board where N is odd
     else:
-        #Find the row position of the blank tile counting from the bottom
-        zeroRowFromBottom = (boardSize - (board.index(0) // boardSize))
-        
-        #If zero is on an even row from the bottom
-        if zeroRowFromBottom % 2 == 0:
-            return inversionCount % 2 != 0
-        #If zero is on an odd row from the bottom
-        else:
-            return inversionCount % 2 == 0
+        return inversionCount % 2 == 0
 
 #Function to perform the IDA* search algorithm to find a solution path
 def idaStar(board, boardSize):
