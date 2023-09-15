@@ -184,15 +184,28 @@ def idaStar(board, boardSize):
         bound = t   #Update the bound for the next round of IDA*
 
 if __name__ == "__main__":
-    boardSize = int(input("Enter the board size (N for NxN): "))
+    while True:  #Keep asking for input until a valid board size is entered
+        try:
+            boardSize = int(input("Enter the board size (N for NxN): "))
+            
+            #Check if boardSize is greater than 1
+            if boardSize <= 1:
+                print("The board size must be greater than 1.")
+                continue
+
+            break  #Exit the loop if the input is valid
+
+        except ValueError:  #Handle the case where input cannot be converted to an integer
+            print("Invalid input. Please enter an integer.")
+
     board = generateRandomBoard(boardSize)
 
     print("Random Initial Board:")
     printBoard(board, boardSize)
     
-    solutionPath = idaStar(board, boardSize) 
+    solutionPath = idaStar(board, boardSize)
     #Each entry in the solutionPath represents the new position of the zero tile after making a move
-        
+    
     if solutionPath:
         print("\nSolution found:", solutionPath)
     else:
