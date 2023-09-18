@@ -2,6 +2,7 @@ NxN Puzzle Solver with IDA* Algorithm
 Description
 
 This Python script is a solver for the NxN puzzle game using the Iterative-Deepening A* (IDA*) search algorithm. The puzzle consists of an NxN grid of tiles labeled from 1 to N*N - 1, with one tile missing (represented as 0). The puzzle is solved when all tiles are in ascending order, ending with the missing tile at the bottom-right corner.
+
 Features
 
     Generate a random and solvable NxN board
