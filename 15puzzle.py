@@ -1,22 +1,31 @@
 import random
 
 def generateRandomBoard(boardSize, numMoves=70):
-    # Initialize a 1D board with the blank tile (0) in the last position.
+    #Create a 1D list representing the board, initialize it with numbers from 1 to (boardSize*boardSize - 1) and append a 0 at the end
     board = list(range(1, boardSize * boardSize)) + [0]
-    zeroIndex = boardSize * boardSize - 1  # Index of blank tile (0)
+    #Initialize the position of the zero (empty slot) on the board
+    zeroIndex = boardSize * boardSize - 1
 
+    #Perform numMoves number of random moves to shuffle the board
     for _ in range(numMoves):
+        #Initialize an empty list to store the possible new positions for the zero tile
         possibleMoves = []
         
+        #Loop through possible moves
         for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            #Calculate the current x, y coordinate of the zero based on its index in the 1D list
             x, y = divmod(zeroIndex, boardSize)
+            #Calculate the new potential x, y coordinates for the zero
             newX, newY = x + dx, y + dy
             
+            #Check if the new coordinates are within the bounds of the board
             if 0 <= newX < boardSize and 0 <= newY < boardSize:
                 newZeroIndex = newX * boardSize + newY
                 possibleMoves.append(newZeroIndex)
-        
+
+        #Randomly select one of the possible moves        
         newZeroIndex = random.choice(possibleMoves)
+        #Swap the zero and the selected tile
         board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
         zeroIndex = newZeroIndex
 
@@ -97,15 +106,6 @@ def manhattanDelta(board, oldIndex, newIndex, boardSize):
         delta += abs(targetX - newX) + abs(targetY - newY) - abs(targetX - x) - abs(targetY - y)
     
     return delta
-
-'''
-If the total number of inversions is even, the puzzle is solvable.
-If the total number of inversions is odd, the puzzle is unsolvable.
-This is a proven property of the N-puzzle problem and is based on the idea of parity. 
-In puzzles with an odd number of inversions, there is no way to transform the puzzle into a solved state by swapping tiles 
-because each swap changes the parity (odd to even or even to odd), making it impossible to reach a solved 
-state with an even number of inversions.
-'''
 
 #Function to perform the IDA* search algorithm to find a solution path
 def idaStar(board, boardSize):
