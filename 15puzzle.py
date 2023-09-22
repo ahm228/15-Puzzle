@@ -1,6 +1,6 @@
 import random
 
-def generateRandomBoard(boardSize, numMoves=10):
+def generateRandomBoard(boardSize, numMoves=70):
     # Initialize a 1D board with the blank tile (0) in the last position.
     board = list(range(1, boardSize * boardSize)) + [0]
     zeroIndex = boardSize * boardSize - 1  # Index of blank tile (0)
