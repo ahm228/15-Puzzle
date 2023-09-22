@@ -1,18 +1,35 @@
 import random
 
-#Function to generate a random and solvable NxN puzzle board
-def generateRandomBoard(boardSize):
-    #Continue trying until a solvable board is found
-    while True:
-        #Initialize a 1D board of length boardSize * boardSize with zeros
-        board = list(range(boardSize * boardSize))
+def generateRandomBoard(boardSize, numMoves=70):
+    #Create a 1D list representing the board, initialize it with numbers from 1 to (boardSize*boardSize - 1) and append a 0 at the end
+    board = list(range(1, boardSize * boardSize)) + [0]
+    #Initialize the position of the zero (empty slot) on the board
+    zeroIndex = boardSize * boardSize - 1
+
+    #Perform numMoves number of random moves to shuffle the board
+    for _ in range(numMoves):
+        #Initialize an empty list to store the possible new positions for the zero tile
+        possibleMoves = []
         
-        #Randomize the initial state of the board
-        random.shuffle(board)
-        
-        #Check if the generated board is solvable
-        if isSolvable(board, boardSize):
-            return board
+        #Loop through possible moves
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            #Calculate the current x, y coordinate of the zero based on its index in the 1D list
+            x, y = divmod(zeroIndex, boardSize)
+            #Calculate the new potential x, y coordinates for the zero
+            newX, newY = x + dx, y + dy
+            
+            #Check if the new coordinates are within the bounds of the board
+            if 0 <= newX < boardSize and 0 <= newY < boardSize:
+                newZeroIndex = newX * boardSize + newY
+                possibleMoves.append(newZeroIndex)
+
+        #Randomly select one of the possible moves        
+        newZeroIndex = random.choice(possibleMoves)
+        #Swap the zero and the selected tile
+        board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
+        zeroIndex = newZeroIndex
+
+    return board
 
 def printBoard(board, boardSize):
     for i in range(boardSize): 
@@ -90,42 +107,6 @@ def manhattanDelta(board, oldIndex, newIndex, boardSize):
     
     return delta
 
-'''
-If the total number of inversions is even, the puzzle is solvable.
-If the total number of inversions is odd, the puzzle is unsolvable.
-This is a proven property of the N-puzzle problem and is based on the idea of parity. 
-In puzzles with an odd number of inversions, there is no way to transform the puzzle into a solved state by swapping tiles 
-because each swap changes the parity (odd to even or even to odd), making it impossible to reach a solved 
-state with an even number of inversions.
-'''
-
-#Function to check if a given board is solvable
-def isSolvable(board, boardSize):
-    inversionCount = 0
-    
-    for i in range(len(board) - 1):
-        if board[i] == 0:
-            continue
-        for j in range(i + 1, len(board)):
-            if board[j] == 0:
-                continue
-            if board[i] > board[j]:
-                inversionCount += 1
-    
-    #Find the row position of the blank tile counting from the bottom
-    zeroRowFromBottom = (boardSize - (board.index(0) // boardSize))
-    
-    #For board where N is even
-    if boardSize % 2 == 0:
-        if zeroRowFromBottom % 2 == 0:  # zero is on an even row counting from the bottom
-            return inversionCount % 2 != 0
-        else:  # zero is on an odd row counting from the bottom
-            return inversionCount % 2 == 0
-
-    #For board where N is odd
-    else:
-        return inversionCount % 2 == 0
-
 #Function to perform the IDA* search algorithm to find a solution path
 def idaStar(board, boardSize):
     path = []
@@ -177,9 +158,6 @@ def idaStar(board, boardSize):
         
         if t == -1:
             return path
-        
-        if t == float('inf'):
-            return None
         
         bound = t   #Update the bound for the next round of IDA*
 
