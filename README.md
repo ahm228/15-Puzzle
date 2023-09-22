@@ -1,6 +1,7 @@
 Overview
 
 15puzzle.py is a Python script that implements the classic 15-puzzle game. It uses the Iterative Deepening A* (IDA*) algorithm to find a solution to a given board state. The board is represented as a 1D list and shuffled randomly at the beginning of the game.
+
 Features
 
     Randomly generates an initial board of NxN size.
@@ -13,6 +14,7 @@ Dependencies
     random module (built-in)
 
 Usage
+
     Running the Script
 
     To execute the script, simply run the following command in your terminal:
@@ -20,6 +22,7 @@ Usage
     You will be prompted to enter the board size (N for an NxN board).
 
 Example Output
+
     Enter the board size (N for NxN): 4
     Random Initial Board:
     1	2	3	4	
@@ -30,6 +33,7 @@ Example Output
     Solution found: [14, 15, ...]
 
 Functions
+
     generateRandomBoard(boardSize, numMoves=70)
     Generates a random board by making numMoves random moves on a solved board.
 
@@ -52,4 +56,5 @@ Functions
     Uses IDA* algorithm to find a solution path for the puzzle.
 
 Limitations
+
     The program's performance might decline for larger board sizes.
