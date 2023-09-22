@@ -178,9 +178,6 @@ def idaStar(board, boardSize):
         if t == -1:
             return path
         
-        if t == float('inf'):
-            return None
-        
         bound = t   #Update the bound for the next round of IDA*
 
 if __name__ == "__main__":
