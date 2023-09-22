@@ -1,9 +1,10 @@
 import random
 
-def generateRandomBoard(boardSize, numMoves=100):
-    board = list(range(boardSize * boardSize))
-    zeroIndex = board.index(0)
-    
+def generateRandomBoard(boardSize, numMoves=10):
+    # Initialize a 1D board with the blank tile (0) in the last position.
+    board = list(range(1, boardSize * boardSize)) + [0]
+    zeroIndex = boardSize * boardSize - 1  # Index of blank tile (0)
+
     for _ in range(numMoves):
         possibleMoves = []
         
