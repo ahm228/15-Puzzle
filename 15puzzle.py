@@ -1,18 +1,25 @@
 import random
 
-#Function to generate a random and solvable NxN puzzle board
-def generateRandomBoard(boardSize):
-    #Continue trying until a solvable board is found
-    while True:
-        #Initialize a 1D board of length boardSize * boardSize with zeros
-        board = list(range(boardSize * boardSize))
+def generateRandomBoard(boardSize, numMoves=100):
+    board = list(range(boardSize * boardSize))
+    zeroIndex = board.index(0)
+    
+    for _ in range(numMoves):
+        possibleMoves = []
         
-        #Randomize the initial state of the board
-        random.shuffle(board)
+        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            x, y = divmod(zeroIndex, boardSize)
+            newX, newY = x + dx, y + dy
+            
+            if 0 <= newX < boardSize and 0 <= newY < boardSize:
+                newZeroIndex = newX * boardSize + newY
+                possibleMoves.append(newZeroIndex)
         
-        #Check if the generated board is solvable
-        if isSolvable(board, boardSize):
-            return board
+        newZeroIndex = random.choice(possibleMoves)
+        board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
+        zeroIndex = newZeroIndex
+
+    return board
 
 def printBoard(board, boardSize):
     for i in range(boardSize): 
@@ -98,33 +105,6 @@ In puzzles with an odd number of inversions, there is no way to transform the pu
 because each swap changes the parity (odd to even or even to odd), making it impossible to reach a solved 
 state with an even number of inversions.
 '''
-
-#Function to check if a given board is solvable
-def isSolvable(board, boardSize):
-    inversionCount = 0
-    
-    for i in range(len(board) - 1):
-        if board[i] == 0:
-            continue
-        for j in range(i + 1, len(board)):
-            if board[j] == 0:
-                continue
-            if board[i] > board[j]:
-                inversionCount += 1
-    
-    #Find the row position of the blank tile counting from the bottom
-    zeroRowFromBottom = (boardSize - (board.index(0) // boardSize))
-    
-    #For board where N is even
-    if boardSize % 2 == 0:
-        if zeroRowFromBottom % 2 == 0:  # zero is on an even row counting from the bottom
-            return inversionCount % 2 != 0
-        else:  # zero is on an odd row counting from the bottom
-            return inversionCount % 2 == 0
-
-    #For board where N is odd
-    else:
-        return inversionCount % 2 == 0
 
 #Function to perform the IDA* search algorithm to find a solution path
 def idaStar(board, boardSize):
