@@ -80,86 +80,59 @@ def manhattanDistance(board, boardSize):
     
     return distance
 
-#Function to incrementally update Manhattan distance after making a move
+# Function to incrementally update Manhattan distance after making a move
 def manhattanDelta(board, oldIndex, newIndex, boardSize):
-    #Initialize the delta variable, which will store the change in Manhattan distance
     delta = 0
-    
-    #Loop through both old and new positions of the moved tile
     for oi, ni in [(oldIndex, newIndex), (newIndex, oldIndex)]:
-        #Retrieve the value at the old position
         value = board[oi]
-        
-        #Skip if the tile is 0
         if value == 0:
             continue
-        
-        #Calculate the target position of the tile
         targetVal = value - 1
         x, y = divmod(oi, boardSize)
         targetX, targetY = divmod(targetVal, boardSize)
         newX, newY = divmod(ni, boardSize)
-        
-        #Update the change in Manhattan distance
-        #Add the Manhattan distance from the new position to the target position
-        #Subtract the Manhattan distance from the old position to the target position
         delta += abs(targetX - newX) + abs(targetY - newY) - abs(targetX - x) - abs(targetY - y)
-    
     return delta
 
-#Function to perform the IDA* search algorithm to find a solution path
+# Updated DFS function
+def dfs(board, g, bound, zeroIndex, h, path):  # Add 'path' as an argument
+    f = g + h
+    if f > bound:
+        return f
+    if isGoal(board, boardSize):
+        return -1
+    minBound = float('inf')
+    for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+        x, y = divmod(zeroIndex, boardSize)
+        newX, newY = x + dx, y + dy
+        if 0 <= newX < boardSize and 0 <= newY < boardSize:
+            newZeroIndex = newX * boardSize + newY
+            delta = manhattanDelta(board, zeroIndex, newZeroIndex, boardSize)
+            h += delta
+            board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
+            path.append(newZeroIndex)
+            t = dfs(board, g + 1, bound, newZeroIndex, h, path)  # Pass 'path' to the recursive call
+            if t == -1:
+                return -1
+            if t < minBound:
+                minBound = t
+            path.pop()
+            board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
+            h -= delta  # Revert the heuristic to its previous value
+    return minBound
+
+# Updated IDA* function
 def idaStar(board, boardSize):
     path = []
-
-    def dfs(board, g, bound, zeroIndex):
-        h = manhattanDistance(board, boardSize)
-        f = g + h
-        #f = total cost, g = actual cost (incremented at each step), h = heuristic cost (computed using Manhattan distance)
-
-        if f > bound:   #If the estimated cost exceeds the current bound, return the estimated cost
-            return f
-        
-        if isGoal(board, boardSize):    #Check if the current board is the goal state
-            return -1
-        
-        minBound = float('inf') #Initialize minBound to an arbitrarily large number
-        
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:   #Explore adjacent moves
-            x, y = divmod(zeroIndex, boardSize) #Get the current x, y coordinates of the zero
-            newX, newY = x + dx, y + dy
-            
-            if 0 <= newX < boardSize and 0 <= newY < boardSize: #Check if new coordinates are valid (within bounds)
-                newZeroIndex = newX * boardSize + newY  #Calculate new index for zero
-                delta = manhattanDelta(board, zeroIndex, newZeroIndex, boardSize)   #Calculate how this move will affect the Manhattan distance
-                h += delta  #Add the delta to the heuristic
-                board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]   #Perform the move
-                path.append(newZeroIndex)   #Add this move to the path
-                t = dfs(board, g + 1, bound, newZeroIndex)  #Recursively call DFS with new board state
-                
-                if t == -1: #Goal is found
-                    return -1
-                
-                if t < minBound:    #Update the minimum bound needed for next iteration
-                    minBound = t
-
-                #Backtrack, undo the move and remove the last added move in path
-                path.pop() 
-                board[zeroIndex], board[newZeroIndex] = board[newZeroIndex], board[zeroIndex]
-                h -= delta  #Subtract the delta from the heuristic to backtrack
-
-        return minBound
-
     bound = manhattanDistance(board, boardSize)
+    h = bound  # Initialize h to the initial full Manhattan distance
     zeroIndex = board.index(0)
-
-    #Enter an infinite loop, will break when solution is found
     while True:
-        t = dfs(board, 0, bound, zeroIndex) #Call the DFS function to explore nodes up to the current bound
-        
+        t = dfs(board, 0, bound, zeroIndex, h, path)  # Pass 'path' as an argument
         if t == -1:
             return path
-        
-        bound = t   #Update the bound for the next round of IDA*
+        bound = t
+
 
 if __name__ == "__main__":
     while True:  #Keep asking for input until a valid board size is entered
