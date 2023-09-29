@@ -6,12 +6,13 @@ Features
 
     Randomly generates an initial board of NxN size.
     Uses the Manhattan distance heuristic for optimizing the IDA* algorithm.
-    Displays the initial board and the solution path.
+    Displays the initial board, the solution path, and the time taken to solve.
 
 Dependencies
 
     Python 3.x
     random module (built-in)
+    time module (built-in)
 
 Usage
 

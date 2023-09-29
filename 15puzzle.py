@@ -190,4 +190,3 @@ if __name__ == "__main__":
         print("\nNo solution found")
 
     print("Solved in: {:.7f} seconds".format(elapsedTime))
-
