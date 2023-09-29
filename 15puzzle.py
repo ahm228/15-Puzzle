@@ -1,4 +1,5 @@
 import random
+import time
 
 def generateRandomBoard(boardSize, numMoves=70):
 
@@ -178,9 +179,15 @@ if __name__ == "__main__":
     print("Random Initial Board:")
     printBoard(board, boardSize)
     
+    startTime = time.time()
     solutionPath = idaStar(board, boardSize)
+    endTime = time.time()
+    elapsedTime = endTime - startTime
     
     if solutionPath:
         print("\nSolution found:", solutionPath)
     else:
         print("\nNo solution found")
+
+    print("Solved in: {:.7f} seconds".format(elapsedTime))
+
